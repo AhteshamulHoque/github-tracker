@@ -1,25 +1,21 @@
-
 const loadIssues = () => {
   fetch("https://phi-lab-server.vercel.app/api/v1/lab/issues")
     .then(res => res.json())
     .then(data => {
 
-   
-      const container = document.getElementById("issue-container");
-      container.innerHTML = "";
-
-      data.data.forEach(issue => {
-        
+      // Issue data cache for filtering
+      window.allIssues = data.data.map(issue => {
         if(issue.priority?.toLowerCase() === "low") {
           issue.status = "closed";
         } else if(issue.priority?.toLowerCase() === "medium") {
           issue.status = "open";
         }
-        loadIssueDetails(issue.id, issue.status);
+        return issue;
       });
+
+      displayIssues(window.allIssues);
     });
 };
-
 
 const loadIssueDetails = (id, forcedStatus) => {
   fetch(`https://phi-lab-server.vercel.app/api/v1/lab/issue/${id}`)
@@ -29,6 +25,12 @@ const loadIssueDetails = (id, forcedStatus) => {
       if(forcedStatus) issueData.status = forcedStatus;
       displayIssue(issueData);
     });
+};
+
+const displayIssues = (issues) => {
+  const container = document.getElementById("issue-container");
+  container.innerHTML = "";
+  issues.forEach(issue => displayIssue(issue));
 };
 
 const displayIssue = (issue) => {
@@ -85,4 +87,27 @@ const displayIssue = (issue) => {
 
   container.appendChild(div);
 };
+
+const issueCountElement = document.querySelector("h2.font-semibold"); 
+
+document.querySelectorAll(".btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    const filter = btn.textContent.toLowerCase();
+    let filteredIssues;
+
+    if(filter === "all") {
+      filteredIssues = window.allIssues;
+    } else {
+      filteredIssues = window.allIssues.filter(issue => issue.status?.toLowerCase() === filter);
+    }
+
+    displayIssues(filteredIssues);
+
+    document.querySelectorAll(".btn").forEach(b => b.classList.remove("btn-active"));
+    btn.classList.add("btn-active");
+
+    issueCountElement.textContent = `${filteredIssues.length} Issues`;
+  });
+});
+
 loadIssues();
