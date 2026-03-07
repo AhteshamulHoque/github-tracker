@@ -4,8 +4,101 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Github-Tracker-Home page </title>
+
+     <!-- font awesome cdn link -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <!-- tailwind cdn link -->
+     <link href="https://cdn.jsdelivr.net/npm/daisyui@5" rel="stylesheet" type="text/css" />
+<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+
+<!-- font name  -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&display=swap" rel="stylesheet">
+
 </head>
-<body>
-    <p>Hoome page </p>
+
+<body class="bg-gray-100">
+
+<header>
+<nav class="shadow-sm bg-white">
+  <div class="max-w-7xl mx-auto px-4 py-3 flex flex-col md:flex-row items-center justify-between gap-3">
+
+    <div class=" left flex items-center gap-3">
+      <img src="github-logo.png" alt="logo" class="w-7 h-7">
+      <h1 class="text-lg font-semibold text-gray-700">
+        GitHub Issues Tracker
+      </h1>
+    </div>
+
+    <div class="right flex items-center gap-3 w-full md:w-auto">
+
+      <input 
+        id="searchInput"
+        type="text"
+        placeholder="Search issues..."
+        class="w-full md:w-auto px-3 py-1.5 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-400"
+      >
+
+      <button 
+        class="bg-indigo-600 text-white px-4 py-1.5 rounded-md hover:bg-indigo-700 transition">
+        + New Issue
+      </button>
+
+    </div>
+
+  </div>
+</nav>
+</header>
+
+
+<section class="space-y-4 p-4 md:p-6 md:w-8/12 mx-auto min-h-screen">
+
+  <div class="bg-white p-3 rounded flex gap-2 flex-wrap">
+    <button class="btn btn-active btn-primary bg-white text-primary hover:bg-primary hover:text-white">All</button>
+    <button class="btn btn-soft btn-primary bg-white text-primary hover:bg-primary hover:text-white">Open</button>
+    <button class="btn btn-soft btn-primary bg-white text-primary hover:bg-primary hover:text-white">Closed</button>
+  </div>
+
+
+  <div class="bg-white rounded-lg p-4 md:p-5 flex flex-col md:flex-row items-start md:items-center justify-between shadow-sm gap-4">
+
+    <div class="flex items-center gap-4">
+      <div class="bg-purple-100 p-3 rounded-full">
+        <img src="Aperture.png" alt="">
+      </div>
+
+      <div>
+        <h2 class="font-semibold text-lg text-gray-700">50 Issues</h2>
+        <p class="text-sm text-gray-500">Track and manage your project issues</p>
+      </div>
+    </div>
+
+    <div class="flex items-center gap-4 text-sm">
+      <div class="flex items-center gap-2">
+        <img src="Open-Status.png" alt="">
+        <p class="text-gray-600">Open</p>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <img src="Closed- Status .png" alt="">
+        <p class="text-gray-600">Closed</p>
+      </div>
+    </div>
+
+  </div>
+
+
+
+<div id="issue-container" class="flex flex-wrap gap-4 p-6 bg-gray-50">
+  
+</div>
+
+</section>
+
+
+<script src="script/card.js"></script>
 </body>
+
 </html>

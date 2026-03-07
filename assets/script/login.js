@@ -20,3 +20,19 @@ document.getElementById("signin-btn").addEventListener("click", function() {
     }
 
 });
+
+// search api 
+
+const searchInput = document.getElementById("searchInput");
+
+searchInput.addEventListener("click", function () {
+
+    const searchText = searchInput.value;
+
+    fetch(`https://phi-lab-server.vercel.app/api/v1/lab/issues/search?q=${searchText}`)
+        .then(res => res.json())
+        .then(data => {
+            console.log(data);
+        });
+
+});
