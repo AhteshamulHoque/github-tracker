@@ -19,9 +19,51 @@
 
 
 </head>
-<body>
-    <h1>Github-tracker</h1>
-    <p>Welcome to the Github-tracker!</p>
+<body class="bg-gray-200 min-h-screen flex items-center justify-center">
+
+  <div class="w-[380px]  p-6 rounded-lg bg-white">
+
+    <div class="text-center mb-6">
+      <div class="flex justify-center mb-2">
+        <div class=" text-white w-14 h-14 rounded-full flex items-center justify-center text-2xl">
+          <img src="./github-logo.png" alt="">
+        </div>
+      </div>
+
+      <h2 class="text-lg font-semibold">GitHub Issues Tracker</h2>
+      <p class="text-sm text-gray-500">Sign in to manage your issues</p>
+    </div>
+    <form class="space-y-4">
+
+      <div>
+        <label class="text-sm font-medium">Username</label>
+        <input id="input-name" type="text" placeholder="Enter Username"
+        class="input input-bordered w-full mt-1"/>
+        <p class="text-xs text-blue-500 mt-1">Default: admin</p>
+      </div>
+
+      <div>
+        <label class="text-sm font-medium">Password</label>
+        <input id="input-pass" type="password" placeholder="Enter Password"
+        class="input input-bordered w-full mt-1"/>
+        <p class="text-xs text-blue-500 mt-1">Default: admin123</p>
+      </div>
+
+      <button id="signin-btn" type="button" class="btn w-full text-white border-none bg-blue-600">
+  Sign In
+</button>
+
+    </form>
+    <div class="divider text-sm">OR</div>
+    <div class="border border-gray-300 rounded-md p-4 text-center text-sm">
+      <p class="text-gray-500 mb-1">Demo Credentials:</p>
+      <p>Username: <b>admin</b></p>
+      <p>Password: <b>admin123</b></p>
+    </div>
+
+  </div>
+
+  <script src="script/login.js"></script>
     
 </body>
 </html>
