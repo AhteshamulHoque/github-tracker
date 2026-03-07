@@ -23,73 +23,75 @@
 
 <header>
 <nav class="shadow-sm bg-white">
-  <div class="max-w-7xl mx-auto px-4 py-3 flex flex-col md:flex-row items-center justify-between gap-3">
+  <div class="max-w-7xl mx-auto px-4 py-3 flex flex-col md:flex-row items-center justify-between gap-4">
 
-    <div class=" left flex items-center gap-3">
-      <img src="github-logo.png" alt="logo" class="w-7 h-7">
-      <h1 class="text-lg font-semibold text-gray-700">
+    <div class="left flex items-center gap-3">
+      <img src="github-logo.png" alt="logo" class="w-8 h-8">
+      <h1 class="text-xl font-semibold text-gray-700">
         GitHub Issues Tracker
       </h1>
     </div>
-
-    <div class="right flex items-center gap-3 w-full md:w-auto">
+                 
+    <form id="searchForm" class=" right flex items-center gap-3 w-full md:w-auto">
 
       <input 
         id="searchInput"
         type="text"
         placeholder="Search issues..."
-        class="w-full md:w-auto px-3 py-1.5 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-400"
+        class="w-full md:w-64 px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-400"
       >
-
       <button 
-        class="bg-indigo-600 text-white px-4 py-1.5 rounded-md hover:bg-indigo-700 transition">
-        + New Issue
+        type="submit"
+        class="btn bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 transition">
+       + New Issue
       </button>
-
-    </div>
+    </form>
 
   </div>
 </nav>
 </header>
 
 
-<section class="space-y-4 p-4 md:p-6 w-10/12 mx-auto min-h-screen">
+<section class="space-y-2 p-2 md:p-3 w-10/12 mx-auto min-h-screen">
 
-  <div class="bg-white p-3 rounded flex gap-2 flex-wrap w-full">
+  <div class="bg-white p-1.5 rounded flex gap-1.5 flex-wrap w-full">
     <button class="btn btn-active btn-primary bg-white text-primary hover:bg-primary hover:text-white">All</button>
     <button class="btn btn-soft btn-primary bg-white text-primary hover:bg-primary hover:text-white">Open</button>
     <button class="btn btn-soft btn-primary bg-white text-primary hover:bg-primary hover:text-white">Closed</button>
   </div>
 
-  <div class="bg-white rounded-lg p-4 md:p-5 flex flex-col md:flex-row items-start md:items-center justify-between shadow-sm gap-4 w-full">
-    <div class="flex items-center gap-4">
-      <div class="bg-purple-100 p-3 rounded-full">
-        <img src="Aperture.png" alt="">
+  <div class="bg-white rounded-lg p-3 flex flex-col md:flex-row items-start md:items-center justify-between shadow-sm gap-2 w-full">
+    
+    <div class="flex items-center gap-2">
+      <div class="bg-purple-100 p-1.5 rounded-full">
+        <img src="Aperture.png" alt="" class="w-6 h-6">
       </div>
+
       <div>
-        <h2 class="font-semibold text-lg text-gray-700">50 Issues</h2>
-        <p class="text-sm text-gray-500">Track and manage your project issues</p>
+        <h2 class="font-semibold text-sm text-gray-700">50 Issues</h2>
+        <p class="text-xs text-gray-500">Track and manage your project issues</p>
       </div>
     </div>
 
-    <div class="flex items-center gap-4 text-sm">
-      <div class="flex items-center gap-2">
-        <img src="Open-Status.png" alt="">
+    <div class="flex items-center gap-2 text-xs">
+      <div class="flex items-center gap-1">
+        <img src="Open-Status.png" alt="" class="w-4 h-4">
         <p class="text-gray-600">Open</p>
       </div>
 
-      <div class="flex items-center gap-2">
-        <img src="Closed- Status .png" alt="">
+      <div class="flex items-center gap-1">
+        <img src="Closed- Status .png" alt="" class="w-4 h-4">
         <p class="text-gray-600">Closed</p>
       </div>
     </div>
+
   </div>
 
-  <div id="issue-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 w-full"></div>
+  <div id="issue-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 w-full"></div>
 
 </section>
 
-
+<script src="script/search.js"></script>
 <script src="script/card.js"></script>
 </body>
 

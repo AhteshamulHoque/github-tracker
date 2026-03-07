@@ -1,10 +1,15 @@
-// Load all issues
+
 const loadIssues = () => {
   fetch("https://phi-lab-server.vercel.app/api/v1/lab/issues")
     .then(res => res.json())
     .then(data => {
+
+   
+      const container = document.getElementById("issue-container");
+      container.innerHTML = "";
+
       data.data.forEach(issue => {
-        // Low priority automatically closed, medium forced open
+        
         if(issue.priority?.toLowerCase() === "low") {
           issue.status = "closed";
         } else if(issue.priority?.toLowerCase() === "medium") {
@@ -15,7 +20,7 @@ const loadIssues = () => {
     });
 };
 
-// Load individual issue details
+
 const loadIssueDetails = (id, forcedStatus) => {
   fetch(`https://phi-lab-server.vercel.app/api/v1/lab/issue/${id}`)
     .then(res => res.json())
@@ -26,14 +31,12 @@ const loadIssueDetails = (id, forcedStatus) => {
     });
 };
 
-// Display issue card
 const displayIssue = (issue) => {
   const container = document.getElementById("issue-container");
   const div = document.createElement("div");
 
   const statusLower = issue.status?.toLowerCase();
 
-  // Null-safe date
   const dateString = issue.created_at || issue.createdAt || issue.date || null;
   const formattedDate = dateString ? new Date(dateString).toLocaleDateString() : "No date";
 
@@ -44,18 +47,18 @@ const displayIssue = (issue) => {
         <div>
           <div class="flex justify-between items-center mb-4">
             <div class="w-8 h-8 rounded-full ${statusLower === "closed" ? "bg-purple-100" : "bg-green-100"} flex items-center justify-center">
-              <img src="${statusLower === "closed" ? 'Closed-Status.png' : 'Open-Status.png'}" alt="" class="w-5 h-5">
+              <img src="${statusLower === "closed" ? './Closed- Status .png' : './Open-Status.png'}" alt="" class="w-5 h-5">
             </div>
-            <span class="bg-red-50 text-red-400 text-xs font-bold px-4 py-1.5 rounded-full uppercase tracking-wider">
+            <span class="bg-red-50 text-red-400  font-bold px-4 py-2 rounded-full ">
               ${issue.priority || "N/A"}
             </span>
           </div>
 
-          <h3 class="text-slate-800 font-bold text-lg leading-tight mb-2">
+          <h3 class="text-slate-800 font-bold text-lg  mb-2">
             ${issue.title || "No title"}
           </h3>
 
-          <p class="text-slate-500 text-sm leading-relaxed mb-5">
+          <p class="text-slate-500 text-sm mb-5">
             ${issue.description ? issue.description.slice(0,80) + "..." : "No description"}
           </p>
 
@@ -82,6 +85,4 @@ const displayIssue = (issue) => {
 
   container.appendChild(div);
 };
-
-// Start
 loadIssues();
