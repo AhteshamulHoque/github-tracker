@@ -1,11 +1,9 @@
 
-
 const loadIssues = () => {
   fetch("https://phi-lab-server.vercel.app/api/v1/lab/issues")
     .then(res => res.json())
     .then(data => {
 
-      // Issue data cache for filtering
       window.allIssues = data.data.map(issue => {
         if(issue.priority?.toLowerCase() === "low") {
           issue.status = "closed";
@@ -135,21 +133,34 @@ const issueCountElement = document.querySelector("h2.font-semibold");
 
 document.querySelectorAll(".btn").forEach(btn => {
   btn.addEventListener("click", () => {
-    const filter = btn.textContent.toLowerCase();
-    let filteredIssues;
 
-    if(filter === "all") {
-      filteredIssues = window.allIssues;
-    } else {
-      filteredIssues = window.allIssues.filter(issue => issue.status?.toLowerCase() === filter);
-    }
+    const container = document.getElementById("issue-container");
 
-    displayIssues(filteredIssues);
+    container.innerHTML = `
+      <div class="col-span-4 flex justify-center items-center py-10">
+        <span class="loading loading-spinner loading-lg text-primary"></span>
+      </div>
+    `;
 
-    document.querySelectorAll(".btn").forEach(b => b.classList.remove("btn-active"));
-    btn.classList.add("btn-active");
+    setTimeout(() => {
 
-    issueCountElement.textContent = `${filteredIssues.length} Issues`;
+      const filter = btn.textContent.toLowerCase();
+      let filteredIssues;
+
+      if(filter === "all") {
+        filteredIssues = window.allIssues;
+      } else {
+        filteredIssues = window.allIssues.filter(issue => issue.status?.toLowerCase() === filter);
+      }
+
+      displayIssues(filteredIssues);
+
+      document.querySelectorAll(".btn").forEach(b => b.classList.remove("btn-active"));
+      btn.classList.add("btn-active");
+
+      issueCountElement.textContent = `${filteredIssues.length} Issues`;
+
+    }, 400); 
   });
 });
 
