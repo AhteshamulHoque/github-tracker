@@ -56,7 +56,7 @@ const displayIssue = (issue) => {
         <div>
           <div class="flex justify-between items-center mb-4">
             <div class="w-8 h-8 rounded-full ${statusLower === "closed" ? "bg-purple-100" : "bg-green-100"} flex items-center justify-center">
-              <img src="${statusLower === "closed" ? './Closed- Status .png' : './Open-Status.png'}" alt="" class="w-5 h-5">
+              <img src="${statusLower === "closed" ? './assets/Closed- Status .png' : './assets/Open-Status.png'}" alt="" class="w-5 h-5">
             </div>
 
             <span class="bg-red-50 font-bold px-4 py-2 rounded-full ${
@@ -170,7 +170,7 @@ const openModal = (issue) => {
                 <span class="w-2 h-2 bg-white rounded-full"></span> Opened
             </span>
             <p class="text-slate-500 font-medium">
-                Opened by <span class="text-slate-700 font-bold">${issue.author || 'Fahim Ahmed'}</span> • ${formattedDate}
+                Opened by <span class="text-slate-700 font-bold">${issue.author || ''}</span> • ${formattedDate}
             </p>
         </div>
 
