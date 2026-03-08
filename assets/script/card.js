@@ -1,3 +1,8 @@
+
+
+
+
+
 const loadIssues = () => {
   fetch("https://phi-lab-server.vercel.app/api/v1/lab/issues")
     .then(res => res.json())
@@ -21,17 +26,22 @@ const loadIssueDetails = (id, forcedStatus) => {
   fetch(`https://phi-lab-server.vercel.app/api/v1/lab/issue/${id}`)
     .then(res => res.json())
     .then(data => {
+      removeActive();
       const issueData = data.data;
       if(forcedStatus) issueData.status = forcedStatus;
       displayIssue(issueData);
     });
 };
 
+
+
 const displayIssues = (issues) => {
   const container = document.getElementById("issue-container");
   container.innerHTML = "";
   issues.forEach(issue => displayIssue(issue));
 };
+
+
 
 const displayIssue = (issue) => {
   const container = document.getElementById("issue-container");
@@ -93,7 +103,7 @@ const displayIssue = (issue) => {
                 </span>`
               }
 
-              // ✅ Documentation label
+            
               if(label.toLowerCase() === "documentation"){
                 return `<span class="inline-flex items-center gap-1 bg-green-50 text-[#00A96E] text-xs font-bold px-3 py-1.5 rounded-full border border-green-100">
                   <i class="fa-brands fa-readme"></i> ${label}
@@ -147,3 +157,70 @@ document.querySelectorAll(".btn").forEach(btn => {
 });
 
 loadIssues();
+
+const openModal = (issue) => {
+    const modal = document.getElementById('issue-modal');
+    const content = document.getElementById('modal-content');
+    
+    const dateString = issue.created_at || issue.createdAt || issue.date || null;
+    const formattedDate = dateString ? new Date(dateString).toLocaleDateString('en-GB') : "";
+
+    content.innerHTML = `
+        <h1 class="text-4xl font-bold text-[#1E293B] mb-4">${issue.title || "Fix broken image uploads"}</h1>
+        
+        <div class="flex items-center gap-3 mb-8">
+            <span class="bg-[#00BA88] text-white px-4 py-1.5 rounded-full text-sm font-semibold flex items-center gap-2">
+                <span class="w-2 h-2 bg-white rounded-full"></span> Opened
+            </span>
+            <p class="text-slate-500 font-medium">
+                Opened by <span class="text-slate-700 font-bold">${issue.author || 'Fahim Ahmed'}</span> • ${formattedDate}
+            </p>
+        </div>
+
+        <div class="flex gap-3 mb-10">
+            <span class="flex items-center gap-1 bg-red-50 text-[#EF4444] text-xs font-bold px-4 py-2 rounded-full border border-red-100 uppercase tracking-wider">
+                <i class="fa-solid fa-bug"></i> BUG
+            </span>
+            <span class="flex items-center gap-1 bg-yellow-50 text-[#D97706] text-xs font-bold px-4 py-2 rounded-full border border-yellow-100 uppercase tracking-wider">
+                <i class="fa-regular fa-life-ring"></i> HELP WANTED
+            </span>
+        </div>
+
+        <p class="text-slate-500 text-xl leading-relaxed mb-12">
+            ${issue.description || ""}
+        </p>
+
+        <div class="bg-slate-50/80 rounded-2xl p-8 grid grid-cols-2 gap-8">
+            <div>
+                <p class="text-slate-400 text-sm font-bold uppercase mb-2 tracking-widest">Assignee:</p>
+                <p class="text-slate-800 text-xl font-bold">${issue.author || ''}</p>
+            </div>
+            <div>
+                <p class="text-slate-400 text-sm font-bold uppercase mb-2 tracking-widest">Priority:</p>
+                <span class="bg-[#F84C4C] text-white px-6 py-1.5 rounded-full font-black text-sm uppercase tracking-tighter">
+                    ${issue.priority || ''}
+                </span>
+            </div>
+        </div>
+    `;
+    
+    modal.classList.remove('hidden');
+    document.body.style.overflow = 'hidden'; 
+};
+
+const closeModal = () => {
+    document.getElementById('issue-modal').classList.add('hidden');
+    document.body.style.overflow = 'auto'; 
+};
+
+
+document.getElementById("issue-container").addEventListener("click", (e) => {
+    const card = e.target.closest('.max-w-xs'); 
+    if (card) {
+        const idText = card.querySelector('.text-slate-500.text-sm.mb-1').innerText;
+        const id = idText.split(' ')[0].replace('#', '').trim();
+        
+        const issue = window.allIssues.find(i => String(i.id) === id);
+        if(issue) openModal(issue);
+    }
+});

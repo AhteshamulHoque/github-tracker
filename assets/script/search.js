@@ -18,11 +18,9 @@ searchForm.addEventListener("submit", function (e) {
         return;
     }
 
-    fetch("https://phi-lab-server.vercel.app/api/v1/lab/issues/search?q=" + searchText)
-        .then(function(res){
-            return res.json();
-        })
-        .then(function(data){
+    fetch("https://phi-lab-server.vercel.app/api/v1/lab/issues/search?q=" + encodeURIComponent(searchText))
+        .then(res => res.json())
+        .then(data => {
             issuesContainer.innerHTML = ""; 
 
             if (!data.data || data.data.length === 0) {
@@ -31,19 +29,20 @@ searchForm.addEventListener("submit", function (e) {
                 return;
             }
 
-            data.data.forEach(function(issue){
+            
+            const filteredIssues = data.data.map(issue => {
                 if(issue.priority && issue.priority.toLowerCase() === "low"){
                     issue.status = "closed";
                 } 
                 else if(issue.priority && issue.priority.toLowerCase() === "medium"){
                     issue.status = "open";
                 }
-
-                loadIssueDetails(issue.id, issue.status);
+                return issue;
             });
 
+            displayIssues(filteredIssues); 
         })
-        .catch(function(error){
+        .catch(error => {
             console.log(error);
             issuesContainer.innerHTML = '<p class="text-center text-red-500 col-span-4">Error loading issues</p>';
         });
