@@ -51,12 +51,20 @@ const displayIssue = (issue) => {
             <div class="w-8 h-8 rounded-full ${statusLower === "closed" ? "bg-purple-100" : "bg-green-100"} flex items-center justify-center">
               <img src="${statusLower === "closed" ? './Closed- Status .png' : './Open-Status.png'}" alt="" class="w-5 h-5">
             </div>
-            <span class="bg-red-50 text-red-400  font-bold px-4 py-2 rounded-full ">
+
+            <span class="bg-red-50 font-bold px-4 py-2 rounded-full ${
+              issue.priority?.toLowerCase() === "medium"
+                ? "text-[#F59E0B]"
+                : issue.priority?.toLowerCase() === "low"
+                  ? "text-[#9CA3AF]"
+                  : "text-red-400"
+            }">
               ${issue.priority || "N/A"}
             </span>
+
           </div>
 
-          <h3 class="text-slate-800 font-bold text-lg  mb-2">
+          <h3 class="text-slate-800 font-bold text-lg mb-2">
             ${issue.title || "No title"}
           </h3>
 
@@ -65,10 +73,38 @@ const displayIssue = (issue) => {
           </p>
 
           <div class="flex gap-2 flex-wrap">
-            ${Array.isArray(issue.labels) ? issue.labels.map(label =>
-              `<span class="inline-flex items-center bg-yellow-50 text-yellow-600 text-xs font-bold px-3 py-1.5 rounded-full border border-yellow-100">
+            ${Array.isArray(issue.labels) ? issue.labels.map(label => {
+
+              if(label.toLowerCase() === "bug"){
+                return `<span class="inline-flex items-center gap-1 bg-red-50 text-[#EF4444] text-xs font-bold px-3 py-1.5 rounded-full border border-red-100">
+                  <i class="fa-solid fa-bug"></i> ${label}
+                </span>`
+              }
+
+              if(label.toLowerCase() === "help wanted"){
+                return `<span class="inline-flex items-center gap-1 bg-yellow-50 text-[#D97706] text-xs font-bold px-3 py-1.5 rounded-full border border-yellow-100">
+                  <i class="fa-regular fa-life-ring"></i> ${label}
+                </span>`
+              }
+
+              if(label.toLowerCase() === "enhancement"){
+                return `<span class="inline-flex items-center gap-1 bg-green-50 text-[#00A96E] text-xs font-bold px-3 py-1.5 rounded-full border border-green-100">
+                  <i class="fa-solid fa-wand-magic-sparkles"></i> ${label}
+                </span>`
+              }
+
+              // ✅ Documentation label
+              if(label.toLowerCase() === "documentation"){
+                return `<span class="inline-flex items-center gap-1 bg-green-50 text-[#00A96E] text-xs font-bold px-3 py-1.5 rounded-full border border-green-100">
+                  <i class="fa-brands fa-readme"></i> ${label}
+                </span>`
+              }
+
+              return `<span class="inline-flex items-center bg-yellow-50 text-yellow-600 text-xs font-bold px-3 py-1.5 rounded-full border border-yellow-100">
                 ${label}
-              </span>`).join("") : ""}
+              </span>`
+
+            }).join("") : ""}
           </div>
         </div>
 

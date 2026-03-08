@@ -3,10 +3,15 @@ const searchInput = document.getElementById("searchInput");
 const issuesContainer = document.getElementById("issue-container");
 
 searchForm.addEventListener("submit", function (e) {
-
     e.preventDefault(); 
 
     const searchText = searchInput.value.trim();
+
+    issuesContainer.innerHTML = `
+        <div class="text-center col-span-4 py-4">
+            <i class="fas fa-spinner fa-spin text-gray-500"></i> Loading...
+        </div>
+    `;
 
     if (searchText === "") {
         loadIssues(); 
@@ -18,8 +23,7 @@ searchForm.addEventListener("submit", function (e) {
             return res.json();
         })
         .then(function(data){
-
-            issuesContainer.innerHTML = "";
+            issuesContainer.innerHTML = ""; 
 
             if (!data.data || data.data.length === 0) {
                 issuesContainer.innerHTML =
@@ -28,7 +32,6 @@ searchForm.addEventListener("submit", function (e) {
             }
 
             data.data.forEach(function(issue){
-
                 if(issue.priority && issue.priority.toLowerCase() === "low"){
                     issue.status = "closed";
                 } 
@@ -37,12 +40,11 @@ searchForm.addEventListener("submit", function (e) {
                 }
 
                 loadIssueDetails(issue.id, issue.status);
-
             });
 
         })
         .catch(function(error){
             console.log(error);
+            issuesContainer.innerHTML = '<p class="text-center text-red-500 col-span-4">Error loading issues</p>';
         });
-
 });
