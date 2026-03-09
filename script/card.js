@@ -1,404 +1,237 @@
 const searchForm = document.getElementById("searchForm");
 const searchInput = document.getElementById("searchInput");
 const issuesContainer = document.getElementById("issue-container");
-let isSearching = false;
+const issueCountElement = document.querySelector("h2.font-semibold");
 
-const loadIssues = () => {
-  fetch("https://phi-lab-server.vercel.app/api/v1/lab/issues")
-    .then(res => res.json())
-    .then(data => {
-      console.log(isSearching);
-      
-      if(isSearching) return;
+let allIssues = [];
 
-      window.allIssues = data.data.map(issue => {
-        if(issue.priority?.toLowerCase() === "low") {
-          issue.status = "closed";
-        } else if(issue.priority?.toLowerCase() === "medium") {
-          issue.status = "open";
-        }
-        return issue;
-      });
+// LOAD ALL ISSUES
+const loadIssues = async () => {
+  const res = await fetch(
+    "https://phi-lab-server.vercel.app/api/v1/lab/issues",
+  );
+  const data = await res.json();
 
-      displayIssues(window.allIssues);
-    });
+  allIssues = data.data.map((issue) => {
+    if (issue.priority?.toLowerCase() === "low") {
+      issue.status = "closed";
+    } else if (issue.priority?.toLowerCase() === "medium") {
+      issue.status = "open";
+    }
+
+    return issue;
+  });
+
+  displayIssues(allIssues);
 };
 
-const loadIssueDetails = (id, forcedStatus) => {
-  fetch(`https://phi-lab-server.vercel.app/api/v1/lab/issue/${id}`)
-    .then(res => res.json())
-    .then(data => {
-      removeActive();
-      const issueData = data.data;
-      if(forcedStatus) issueData.status = forcedStatus;
-      displayIssue(issueData);
-    });
-};
-
-
-
+// DISPLAY MULTIPLE ISSUES
 const displayIssues = (issues) => {
-  const container = document.getElementById("issue-container");
-  // console.log("Calling from Card");
-  
-  container.innerHTML = "";
-  issues.forEach(issue => displayIssue(issue));
-  
+  issuesContainer.innerHTML = "";
+
+  issues.forEach((issue) => {
+    displayIssue(issue);
+  });
+
+  issueCountElement.textContent = `${issues.length} Issues`;
 };
 
-
-// searchForm.addEventListener("submit", function (e) {
-//     e.preventDefault(); 
-// isSearching = true;
-//     const searchText = searchInput.value.trim();
-
-searchForm.addEventListener("submit", function (e) {
-    e.preventDefault(); 
-    isSearching = true
-    const searchText = searchInput.value.trim();
-
-    fetch("https://phi-lab-server.vercel.app/api/v1/lab/issues/search?q=" + encodeURIComponent(searchText))
-        .then(res => res.json())
-        .then(data => {
-            issuesContainer.innerHTML = ""; 
-const container = document.getElementById("issue-container");
-container.innerHTML = "";
-            data.data.forEach((issue) => {
-    const div = document.createElement("div");
-
-               const statusLower = issue.status?.toLowerCase();
-
-               const dateString =
-                 issue.created_at || issue.createdAt || issue.date || null;
-               const formattedDate = dateString
-                 ? new Date(dateString).toLocaleDateString()
-                 : "No date";
-
-               div.innerHTML = `
-    <div class="max-w-xs w-full h-80 bg-white rounded-xl shadow-sm overflow-hidden mb-4 ${statusLower === "closed" ? "border-t-4 border-purple-500" : "border-t-4 border-green-500"}">
-      <div class="p-5 flex flex-col justify-between h-full">
-        
-        <div>
-          <div class="flex justify-between items-center mb-4">
-            <div class="w-8 h-8 rounded-full ${statusLower === "closed" ? "bg-purple-100" : "bg-green-100"} flex items-center justify-center">
-              <img src="${statusLower === "closed" ? "./assets/Closed- Status .png" : "./assets/Open-Status.png"}" alt="" class="w-5 h-5">
-            </div>
-
-            <span class="bg-red-50 font-bold px-4 py-2 rounded-full ${
-              issue.priority?.toLowerCase() === "medium"
-                ? "text-[#F59E0B]"
-                : issue.priority?.toLowerCase() === "low"
-                  ? "text-[#9CA3AF]"
-                  : "text-red-400"
-            }">
-              ${issue.priority || "N/A"}
-            </span>
-
-          </div>
-
-          <h3 class="text-slate-800 font-bold text-lg mb-2">
-            ${issue.title || "No title"}
-          </h3>
-
-          <p class="text-slate-500 text-sm mb-5">
-            ${issue.description ? issue.description.slice(0, 80) + "..." : "No description"}
-          </p>
-
-          <div class="flex gap-2 flex-wrap">
-            ${
-              Array.isArray(issue.labels)
-                ? issue.labels
-                    .map((label) => {
-                      if (label.toLowerCase() === "bug") {
-                        return `<span class="inline-flex items-center gap-1 bg-red-50 text-[#EF4444] text-xs font-bold px-3 py-1.5 rounded-full border border-red-100">
-                  <i class="fa-solid fa-bug"></i> ${label}
-                </span>`;
-                      }
-
-                      if (label.toLowerCase() === "help wanted") {
-                        return `<span class="inline-flex items-center gap-1 bg-yellow-50 text-[#D97706] text-xs font-bold px-3 py-1.5 rounded-full border border-yellow-100">
-                  <i class="fa-regular fa-life-ring"></i> ${label}
-                </span>`;
-                      }
-
-                      if (label.toLowerCase() === "enhancement") {
-                        return `<span class="inline-flex items-center gap-1 bg-green-50 text-[#00A96E] text-xs font-bold px-3 py-1.5 rounded-full border border-green-100">
-                  <i class="fa-solid fa-wand-magic-sparkles"></i> ${label}
-                </span>`;
-                      }
-
-                      if (label.toLowerCase() === "documentation") {
-                        return `<span class="inline-flex items-center gap-1 bg-green-50 text-[#00A96E] text-xs font-bold px-3 py-1.5 rounded-full border border-green-100">
-                  <i class="fa-brands fa-readme"></i> ${label}
-                </span>`;
-                      }
-
-                      return `<span class="inline-flex items-center bg-yellow-50 text-yellow-600 text-xs font-bold px-3 py-1.5 rounded-full border border-yellow-100">
-                ${label}
-              </span>`;
-                    })
-                    .join("")
-                : ""
-            }
-          </div>
-        </div>
-
-        <div class="bg-slate-50/50 border-t border-gray-100 p-5 pt-4">
-          <p class="text-slate-500 text-sm mb-1">
-            #${issue.id || "N/A"} by <span class="hover:underline cursor-pointer">${issue.author || "Unknown"}</span>
-          </p>
-          <p class="text-slate-400 text-sm">
-            ${formattedDate}
-          </p>
-        </div>
-
-      </div>
-    </div>
-  `;
-
-               container.appendChild(div);
-});
-               
-            
-           
-        })
-        .catch(error => {
-            console.log(error);
-            issuesContainer.innerHTML = '<p class="text-center text-red-500 col-span-4">Error loading issues</p>';
-        });
-        // console.log(filterData);
-        
-       
-});
-  
-
-//     fetch("https://phi-lab-server.vercel.app/api/v1/lab/issues/search?q=" + encodeURIComponent(searchText))
-//         .then(res => res.json())
-//         .then(data => {
-//             // issuesContainer.innerHTML = ""; 
-
-           
-//             // console.log(data.data);
-//             // console.log(searchText);
-//               displayIssues(data.data); 
-            
-            
-//             // filterData = data.data.map(issue => {
-//             //     if(issue.priority && issue.priority.toLowerCase() === "low"){
-//             //         issue.status = "closed";
-//             //     } 
-//             //     else if(issue.priority && issue.priority.toLowerCase() === "medium"){
-//             //         issue.status = "open";
-//             //     }
-//             //     return issue;
-//             // });
-//             // console.log(filteredIssues);
-            
-           
-//         })
-//         .catch(error => {
-//             console.log(error);
-//             issuesContainer.innerHTML = '<p class="text-center text-red-500 col-span-4">Error loading issues</p>';
-//         });
-       
-        
-       
-// });
-
-
+// DISPLAY SINGLE ISSUE CARD
 const displayIssue = (issue) => {
-  const container = document.getElementById("issue-container");
   const div = document.createElement("div");
 
   const statusLower = issue.status?.toLowerCase();
 
   const dateString = issue.created_at || issue.createdAt || issue.date || null;
-  const formattedDate = dateString ? new Date(dateString).toLocaleDateString() : "No date";
+
+  const formattedDate = dateString
+    ? new Date(dateString).toLocaleDateString()
+    : "No date";
 
   div.innerHTML = `
-    <div class="max-w-xs w-full h-80 bg-white rounded-xl shadow-sm overflow-hidden mb-4 ${statusLower === "closed" ? "border-t-4 border-purple-500" : "border-t-4 border-green-500"}">
-      <div class="p-5 flex flex-col justify-between h-full">
-        
-        <div>
-          <div class="flex justify-between items-center mb-4">
-            <div class="w-8 h-8 rounded-full ${statusLower === "closed" ? "bg-purple-100" : "bg-green-100"} flex items-center justify-center">
-              <img src="${statusLower === "closed" ? './assets/Closed- Status .png' : './assets/Open-Status.png'}" alt="" class="w-5 h-5">
-            </div>
 
-            <span class="bg-red-50 font-bold px-4 py-2 rounded-full ${
-              issue.priority?.toLowerCase() === "medium"
-                ? "text-[#F59E0B]"
-                : issue.priority?.toLowerCase() === "low"
-                  ? "text-[#9CA3AF]"
-                  : "text-red-400"
-            }">
-              ${issue.priority || "N/A"}
-            </span>
+  <div class="max-w-xs w-full h-80 bg-white rounded-xl shadow-sm overflow-hidden mb-4 
+  ${statusLower === "closed" ? "border-t-4 border-purple-500" : "border-t-4 border-green-500"}">
 
-          </div>
+  <div class="p-5 flex flex-col justify-between h-full">
 
-          <h3 class="text-slate-800 font-bold text-lg mb-2">
-            ${issue.title || "No title"}
-          </h3>
+  <div>
 
-          <p class="text-slate-500 text-sm mb-5">
-            ${issue.description ? issue.description.slice(0,80) + "..." : "No description"}
-          </p>
+  <div class="flex justify-between items-center mb-4">
 
-          <div class="flex gap-2 flex-wrap">
-            ${Array.isArray(issue.labels) ? issue.labels.map(label => {
+  <div class="w-8 h-8 rounded-full 
+  ${statusLower === "closed" ? "bg-purple-100" : "bg-green-100"} 
+  flex items-center justify-center">
 
-              if(label.toLowerCase() === "bug"){
-                return `<span class="inline-flex items-center gap-1 bg-red-50 text-[#EF4444] text-xs font-bold px-3 py-1.5 rounded-full border border-red-100">
-                  <i class="fa-solid fa-bug"></i> ${label}
-                </span>`
-              }
+  <img src="${
+    statusLower === "closed"
+      ? "./assets/Closed- Status .png"
+      : "./assets/Open-Status.png"
+  }" class="w-5 h-5">
 
-              if(label.toLowerCase() === "help wanted"){
-                return `<span class="inline-flex items-center gap-1 bg-yellow-50 text-[#D97706] text-xs font-bold px-3 py-1.5 rounded-full border border-yellow-100">
-                  <i class="fa-regular fa-life-ring"></i> ${label}
-                </span>`
-              }
+  </div>
 
-              if(label.toLowerCase() === "enhancement"){
-                return `<span class="inline-flex items-center gap-1 bg-green-50 text-[#00A96E] text-xs font-bold px-3 py-1.5 rounded-full border border-green-100">
-                  <i class="fa-solid fa-wand-magic-sparkles"></i> ${label}
-                </span>`
-              }
+  <span class="bg-red-50 font-bold px-4 py-2 rounded-full 
+  ${
+    issue.priority?.toLowerCase() === "medium"
+      ? "text-[#F59E0B]"
+      : issue.priority?.toLowerCase() === "low"
+        ? "text-[#9CA3AF]"
+        : "text-red-400"
+  }">
 
-            
-              if(label.toLowerCase() === "documentation"){
-                return `<span class="inline-flex items-center gap-1 bg-green-50 text-[#00A96E] text-xs font-bold px-3 py-1.5 rounded-full border border-green-100">
-                  <i class="fa-brands fa-readme"></i> ${label}
-                </span>`
-              }
+  ${issue.priority || "N/A"}
 
-              return `<span class="inline-flex items-center bg-yellow-50 text-yellow-600 text-xs font-bold px-3 py-1.5 rounded-full border border-yellow-100">
-                ${label}
-              </span>`
+  </span>
 
-            }).join("") : ""}
-          </div>
-        </div>
+  </div>
 
-        <div class="bg-slate-50/50 border-t border-gray-100 p-5 pt-4">
-          <p class="text-slate-500 text-sm mb-1">
-            #${issue.id || "N/A"} by <span class="hover:underline cursor-pointer">${issue.author || "Unknown"}</span>
-          </p>
-          <p class="text-slate-400 text-sm">
-            ${formattedDate}
-          </p>
-        </div>
+  <h3 class="text-slate-800 font-bold text-lg mb-2">
+  ${issue.title || "No title"}
+  </h3>
 
-      </div>
-    </div>
+  <p class="text-slate-500 text-sm mb-5">
+  ${issue.description ? issue.description.slice(0, 80) + "..." : "No description"}
+  </p>
+
+  <div class="flex gap-2 flex-wrap">
+
+  ${
+    Array.isArray(issue.labels)
+      ? issue.labels
+          .map((label) => {
+            if (label.toLowerCase() === "bug") {
+              return `<span class="bg-red-50 text-[#EF4444] text-xs font-bold px-3 py-1.5 rounded-full">
+         ${label}</span>`;
+            }
+
+            if (label.toLowerCase() === "help wanted") {
+              return `<span class="bg-yellow-50 text-[#D97706] text-xs font-bold px-3 py-1.5 rounded-full">
+         ${label}</span>`;
+            }
+
+            if (label.toLowerCase() === "enhancement") {
+              return `<span class="bg-green-50 text-[#00A96E] text-xs font-bold px-3 py-1.5 rounded-full">
+        ${label}</span>`;
+            }
+
+            return `<span class="bg-yellow-50 text-xs font-bold px-3 py-1.5 rounded-full">
+      ${label}</span>`;
+          })
+          .join("")
+      : ""
+  }
+
+  </div>
+
+  </div>
+
+  <div class="bg-slate-50 border-t p-5 pt-4">
+
+  <p class="text-slate-500 text-sm mb-1">
+  #${issue.id || "N/A"} by ${issue.author || "Unknown"}
+  </p>
+
+  <p class="text-slate-400 text-sm">
+  ${formattedDate}
+  </p>
+
+  </div>
+
+  </div>
+  </div>
   `;
 
-  container.appendChild(div);
+  issuesContainer.appendChild(div);
 };
 
-const issueCountElement = document.querySelector("h2.font-semibold"); 
+// SEARCH
+searchForm.addEventListener("submit", async (e) => {
+  e.preventDefault();
 
-document.querySelectorAll(".btn").forEach(btn => {
+  const searchText = searchInput.value.trim();
+
+  if (!searchText) {
+    displayIssues(allIssues);
+    return;
+  }
+
+  const res = await fetch(
+    "https://phi-lab-server.vercel.app/api/v1/lab/issues/search?q=" +
+      encodeURIComponent(searchText),
+  );
+
+  const data = await res.json();
+
+  displayIssues(data.data);
+});
+
+// FILTER BUTTONS
+document.querySelectorAll(".btn").forEach((btn) => {
   btn.addEventListener("click", () => {
+    const filter = btn.textContent.toLowerCase();
 
-    const container = document.getElementById("issue-container");
+    let filteredIssues;
 
-    container.innerHTML = `
-      <div class="col-span-4 flex justify-center items-center py-10">
-        <span class="loading loading-spinner loading-lg text-primary"></span>
-      </div>
-    `;
+    if (filter === "all") {
+      filteredIssues = allIssues;
+    } else {
+      filteredIssues = allIssues.filter(
+        (issue) => issue.status?.toLowerCase() === filter,
+      );
+    }
 
-    setTimeout(() => {
+    displayIssues(filteredIssues);
 
-      const filter = btn.textContent.toLowerCase();
-      let filteredIssues;
+    document
+      .querySelectorAll(".btn")
+      .forEach((b) => b.classList.remove("btn-active"));
 
-      if(filter === "all") {
-        filteredIssues = window.allIssues;
-      } else {
-        filteredIssues = window.allIssues.filter(issue => issue.status?.toLowerCase() === filter);
-      }
-
-      displayIssues(filteredIssues);
-
-      document.querySelectorAll(".btn").forEach(b => b.classList.remove("btn-active"));
-      btn.classList.add("btn-active");
-
-      issueCountElement.textContent = `${filteredIssues.length} Issues`;
-
-    }, 400); 
+    btn.classList.add("btn-active");
   });
 });
 
-
-  loadIssues();
-
-
+// MODAL OPEN
 const openModal = (issue) => {
-    const modal = document.getElementById('issue-modal');
-    const content = document.getElementById('modal-content');
-    
-    const dateString = issue.created_at || issue.createdAt || issue.date || null;
-    const formattedDate = dateString ? new Date(dateString).toLocaleDateString('en-GB') : "";
+  const modal = document.getElementById("issue-modal");
+  const content = document.getElementById("modal-content");
 
-    content.innerHTML = `
-        <h1 class="text-4xl font-bold text-[#1E293B] mb-4">${issue.title || "Fix broken image uploads"}</h1>
-        
-        <div class="flex items-center gap-3 mb-8">
-            <span class="bg-[#00BA88] text-white px-4 py-1.5 rounded-full text-sm font-semibold flex items-center gap-2">
-                <span class="w-2 h-2 bg-white rounded-full"></span> Opened
-            </span>
-            <p class="text-slate-500 font-medium">
-                Opened by <span class="text-slate-700 font-bold">${issue.author || ''}</span> • ${formattedDate}
-            </p>
-        </div>
+  content.innerHTML = `
+  <h1 class="text-3xl font-bold mb-4">${issue.title}</h1>
+  <p class="mb-6">${issue.description}</p>
+  <p class="text-sm text-gray-500">
+  Author: ${issue.author}
+  </p>
+  `;
 
-        <div class="flex gap-3 mb-10">
-            <span class="flex items-center gap-1 bg-red-50 text-[#EF4444] text-xs font-bold px-4 py-2 rounded-full border border-red-100 uppercase tracking-wider">
-                <i class="fa-solid fa-bug"></i> BUG
-            </span>
-            <span class="flex items-center gap-1 bg-yellow-50 text-[#D97706] text-xs font-bold px-4 py-2 rounded-full border border-yellow-100 uppercase tracking-wider">
-                <i class="fa-regular fa-life-ring"></i> HELP WANTED
-            </span>
-        </div>
+  modal.classList.remove("hidden");
 
-        <p class="text-slate-500 text-xl leading-relaxed mb-12">
-            ${issue.description || ""}
-        </p>
-
-        <div class="bg-slate-50/80 rounded-2xl p-8 grid grid-cols-2 gap-8">
-            <div>
-                <p class="text-slate-400 text-sm font-bold uppercase mb-2 tracking-widest">Assignee:</p>
-                <p class="text-slate-800 text-xl font-bold">${issue.author || ''}</p>
-            </div>
-            <div>
-                <p class="text-slate-400 text-sm font-bold uppercase mb-2 tracking-widest">Priority:</p>
-                <span class="bg-[#F84C4C] text-white px-6 py-1.5 rounded-full font-black text-sm uppercase tracking-tighter">
-                    ${issue.priority || ''}
-                </span>
-            </div>
-        </div>
-    `;
-    
-    modal.classList.remove('hidden');
-    document.body.style.overflow = 'hidden'; 
+  document.body.style.overflow = "hidden";
 };
 
+// MODAL CLOSE
 const closeModal = () => {
-    document.getElementById('issue-modal').classList.add('hidden');
-    document.body.style.overflow = 'auto'; 
+  document.getElementById("issue-modal").classList.add("hidden");
+
+  document.body.style.overflow = "auto";
 };
 
+// CARD CLICK
+issuesContainer.addEventListener("click", (e) => {
+  const card = e.target.closest(".max-w-xs");
 
-document.getElementById("issue-container").addEventListener("click", (e) => {
-    const card = e.target.closest('.max-w-xs'); 
-    if (card) {
-        const idText = card.querySelector('.text-slate-500.text-sm.mb-1').innerText;
-        const id = idText.split(' ')[0].replace('#', '').trim();
-        
-        const issue = window.allIssues.find(i => String(i.id) === id);
-        if(issue) openModal(issue);
-    }
+  if (!card) return;
+
+  const idText = card.querySelector(".text-slate-500").innerText;
+
+  const id = idText.split(" ")[0].replace("#", "");
+
+  const issue = allIssues.find((i) => String(i.id) === id);
+
+  if (issue) {
+    openModal(issue);
+  }
 });
+
+// INITIAL LOAD
+loadIssues();
