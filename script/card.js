@@ -39,6 +39,7 @@ const displayIssues = (issues) => {
 // DISPLAY SINGLE ISSUE CARD
 const displayIssue = (issue) => {
   const div = document.createElement("div");
+ div.setAttribute("data-id", issue.id);
 
   const statusLower = issue.status?.toLowerCase();
 
@@ -50,7 +51,8 @@ const displayIssue = (issue) => {
 
   div.innerHTML = `
 
-  <div class="max-w-xs w-full h-80 bg-white rounded-xl shadow-sm overflow-hidden mb-4 
+  <div data-id="${issue.id}" class="max-w-xs w-full h-80 bg-white rounded-xl shadow-sm overflow-hidden mb-4 
+  
   ${statusLower === "closed" ? "border-t-4 border-purple-500" : "border-t-4 border-green-500"}">
 
   <div class="p-5 flex flex-col justify-between h-full">
@@ -197,11 +199,11 @@ const openModal = (issue) => {
   const content = document.getElementById("modal-content");
 
   content.innerHTML = `
-  <h1 class="text-3xl font-bold mb-4">${issue.title}</h1>
-  <p class="mb-6">${issue.description}</p>
-  <p class="text-sm text-gray-500">
-  Author: ${issue.author}
-  </p>
+    <h1 class="text-3xl font-bold mb-4">${issue.title}</h1>
+    <p class="mb-6">${issue.description}</p>
+    <p class="text-sm text-gray-500">
+      Author: ${issue.author}
+    </p>
   `;
 
   modal.classList.remove("hidden");
@@ -211,27 +213,35 @@ const openModal = (issue) => {
 
 // MODAL CLOSE
 const closeModal = () => {
-  document.getElementById("issue-modal").classList.add("hidden");
+  const modal = document.getElementById("issue-modal");
+  modal.classList.add("hidden");
 
   document.body.style.overflow = "auto";
 };
 
+// CLICK OUTSIDE TO CLOSE
+document.getElementById("issue-modal").addEventListener("click", function (e) {
+  if (e.target.id === "issue-modal") {
+    closeModal();
+  }
+});
+
 // CARD CLICK
 issuesContainer.addEventListener("click", (e) => {
-  const card = e.target.closest(".max-w-xs");
 
-  if (!card) return;
+  const wrapper = e.target.closest("[data-id]");
 
-  const idText = card.querySelector(".text-slate-500").innerText;
+  if (!wrapper) return;
 
-  const id = idText.split(" ")[0].replace("#", "");
+  const id = wrapper.dataset.id;
 
-  const issue = allIssues.find((i) => String(i.id) === id);
+  const issue = allIssues.find(i => String(i.id) === id);
 
   if (issue) {
     openModal(issue);
   }
+
 });
 
-// INITIAL LOAD
+
 loadIssues();
